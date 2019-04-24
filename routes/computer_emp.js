@@ -7,6 +7,7 @@ const key = require('../setup/myurl');
 const jsonwt = require('jsonwebtoken');
 const passport = require('passport');
 const config = require('../strategies/jsonstrategy');
+const { authRequired } = require('../middlewares/auth_required')
 
 router.post('/register', (req, res) =>{
     Person.findOne({email: req.body.email})
@@ -65,9 +66,9 @@ router.post('/login', (req, res) =>{
                             //       });
                                 // }
                            );
-                        // res.header('x-authorization',"Bearer " + token);
                         // res.redirect('/compemp');
-                       res.cookie('authentication', "Bearer " + token);
+                        res.cookie('token', token);
+                    //    res.cookie('authorization', "Bearer " + token);
                        res.redirect('/compemp');
 
                         }
@@ -80,7 +81,7 @@ router.post('/login', (req, res) =>{
         });
 });
 
-router.get('/compemp', passport.authenticate("jwt", {session: false}),(req, res) =>{
+router.get('/compemp', authRequired, (req, res) =>{
     let token = req.cookies.authenticate;
     res.send('authorized');
 
